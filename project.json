@@ -1,0 +1,28 @@
+{
+  "overview": "A modern Role-Based SaaS Billing Portal with secure authentication, subscription management (Free/Pro/Enterprise), Stripe payments, invoice generation, usage analytics, team member management, and an admin control panel — all with dark/light mode and a responsive professional UI.",
+  "features": [
+    "Role-based access for Admin, Manager, and Customer",
+    "Subscription plans: Free, Pro, Enterprise with monthly/annual pricing",
+    "Stripe payment integration and checkout",
+    "Invoice generation and download",
+    "Usage analytics with charts",
+    "Transaction history",
+    "Team member management",
+    "Account settings and profile management",
+    "Dark/light mode toggle",
+    "Protected routes and middleware"
+  ],
+  "category": "saas-billing",
+  "tags": [
+    "saas",
+    "billing",
+    "subscriptions",
+    "stripe",
+    "role-based-access",
+    "dashboard",
+    "analytics",
+    "invoices",
+    "team-management"
+  ],
+  "last_updated": "2026-05-19T06:26:43.121Z"
+}

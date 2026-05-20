@@ -1,0 +1,214 @@
+type http_request_result = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type http_header = 
+ record {
+   name: text;
+   value: text;
+ };
+type UserRole__1 = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserRole = 
+ variant {
+   admin;
+   customer;
+   manager;
+ };
+type UserProfile = 
+ record {
+   billingAddress: opt BillingAddress;
+   createdAt: Timestamp;
+   email: text;
+   name: text;
+   role: UserRole;
+   userId: UserId;
+ };
+type UserId = principal;
+type UsageRecord = 
+ record {
+   apiCallCount: nat;
+   month: nat;
+   userId: UserId;
+   year: nat;
+ };
+type TransformationOutput = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type TransformationInput = 
+ record {
+   context: blob;
+   response: http_request_result;
+ };
+type TransactionStatus = 
+ variant {
+   failed;
+   pending;
+   refunded;
+   succeeded;
+ };
+type Transaction = 
+ record {
+   amountCents: nat;
+   createdAt: Timestamp;
+   currency: text;
+   description: text;
+   id: text;
+   status: TransactionStatus;
+   stripePaymentIntentId: text;
+   userId: UserId;
+ };
+type Timestamp = int;
+type TeamMemberStatus = 
+ variant {
+   active;
+   pending;
+   suspended;
+ };
+type TeamMember = 
+ record {
+   email: text;
+   invitedBy: UserId;
+   joinDate: Timestamp;
+   name: text;
+   principalId: UserId;
+   role: UserRole;
+   status: TeamMemberStatus;
+ };
+type SubscriptionStatus = 
+ variant {
+   active;
+   cancelled;
+   pastDue;
+   trialing;
+ };
+type Subscription = 
+ record {
+   billingPeriod: BillingPeriod;
+   nextBillingDate: Timestamp;
+   startDate: Timestamp;
+   status: SubscriptionStatus;
+   stripeCustomerId: opt text;
+   stripeSubscriptionId: opt text;
+   tier: PlanTier;
+   userId: UserId;
+ };
+type StripeSessionStatus = 
+ variant {
+   completed: record {
+                response: text;
+                userPrincipal: opt text;
+              };
+   failed: record {error: text;};
+ };
+type StripeConfiguration = 
+ record {
+   allowedCountries: vec text;
+   secretKey: text;
+ };
+type ShoppingItem = 
+ record {
+   currency: text;
+   priceInCents: nat;
+   productDescription: text;
+   productName: text;
+   quantity: nat;
+ };
+type PlanTier = 
+ variant {
+   enterprise;
+   free;
+   pro;
+ };
+type PlanConfig = 
+ record {
+   annualPriceCents: nat;
+   apiCallLimit: nat;
+   description: text;
+   features: vec text;
+   monthlyPriceCents: nat;
+   name: text;
+   tier: PlanTier;
+ };
+type InvoiceStatus = 
+ variant {
+   failed;
+   paid;
+   pending;
+   refunded;
+ };
+type Invoice = 
+ record {
+   amountCents: nat;
+   createdAt: Timestamp;
+   currency: text;
+   description: text;
+   downloadData: opt text;
+   id: text;
+   paidAt: opt Timestamp;
+   status: InvoiceStatus;
+   stripeInvoiceId: opt text;
+   userId: UserId;
+ };
+type BillingPeriod = 
+ variant {
+   annual;
+   monthly;
+ };
+type BillingAddress = 
+ record {
+   city: text;
+   country: text;
+   line1: text;
+   line2: opt text;
+   postalCode: text;
+   state: opt text;
+ };
+service : {
+  _initializeAccessControl: () -> ();
+  adminSetSubscription: (userId: UserId, tier: PlanTier, billingPeriod:
+   BillingPeriod) -> ();
+  assignCallerUserRole: (user: principal, role: UserRole__1) -> ();
+  cancelMySubscription: () -> ();
+  confirmPayment: (sessionId: text, tier: PlanTier, billingPeriod:
+   BillingPeriod) -> (Transaction);
+  createCheckoutSession: (items: vec ShoppingItem, successUrl: text,
+   cancelUrl: text) -> (text);
+  getAllInvoices: () -> (vec Invoice) query;
+  getAllTransactions: () -> (vec Transaction) query;
+  getCallerUserProfile: () -> (opt UserProfile) query;
+  getCallerUserRole: () -> (UserRole__1) query;
+  getMyInvoice: (invoiceId: text) -> (opt Invoice) query;
+  getMyInvoices: () -> (vec Invoice) query;
+  getMySubscription: () -> (opt Subscription) query;
+  getMyTransactions: () -> (vec Transaction) query;
+  getMyUsage: (year: nat, month: nat) -> (opt UsageRecord) query;
+  getPlans: () -> (vec PlanConfig) query;
+  getStripeSessionStatus: (sessionId: text) -> (StripeSessionStatus);
+  getTeamMembers: () -> (vec TeamMember) query;
+  getUserProfile: (userId: UserId) -> (opt UserProfile) query;
+  getUserSubscription: (userId: UserId) -> (opt Subscription) query;
+  getUserUsage: (userId: UserId, year: nat, month: nat) ->
+   (opt UsageRecord) query;
+  inviteTeamMember: (memberId: UserId, name: text, email: text, role:
+   UserRole) -> ();
+  isCallerAdmin: () -> (bool) query;
+  isStripeConfigured: () -> (bool) query;
+  listAllUsers: () -> (vec UserProfile) query;
+  recordApiCall: () -> ();
+  removeTeamMember: (memberId: UserId) -> ();
+  saveCallerUserProfile: (profile: UserProfile) -> ();
+  setStripeConfiguration: (config: StripeConfiguration) -> ();
+  setUserRole: (userId: UserId, role: UserRole) -> ();
+  transform: (input: TransformationInput) -> (TransformationOutput) query;
+  updateTeamMemberStatus: (memberId: UserId, status: TeamMemberStatus) -> ();
+}

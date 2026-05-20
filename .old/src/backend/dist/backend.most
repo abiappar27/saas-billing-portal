@@ -1,0 +1,188 @@
+// Version: 3.0.0
+type AccessControlState__45017055 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__605269027<Principal, UserRole__1073662873>
+  };
+type BillingAddress__977058009 =
+  {
+    city : Text;
+    country : Text;
+    line1 : Text;
+    line2 : ?Text;
+    postalCode : Text;
+    state : ?Text
+  };
+type BillingPeriod__411281685 = {#annual; #monthly};
+type Data__791452850<K, V> =
+  {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type Internal__8484328<K, V> =
+  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type InvoiceStatus__912082022 = {#failed; #paid; #pending; #refunded};
+type Invoice__752737744 =
+  {
+    amountCents : Nat;
+    createdAt : Timestamp__301639476;
+    currency : Text;
+    description : Text;
+    downloadData : ?Text;
+    id : Text;
+    paidAt : ?Timestamp__301639476;
+    status : InvoiceStatus__912082022;
+    stripeInvoiceId : ?Text;
+    userId : UserId__158757552
+  };
+type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
+type Map__158565046<K, V> = Map__297112838<K, V>;
+type Map__297112838<K, V> =
+  {var root : Node__46230540<K, V>; var size : Nat__490723111};
+type Map__605269027<K, V> = Map__158565046<K, V>;
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__46230540<K, V> =
+  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type OldAnalysisResults__538736201 =
+  {
+    anomalyDetection : OldAnomalyDetectionResults__1049354644;
+    preprocessing : OldPreprocessingSummary__833209940;
+    timestamp : Int
+  };
+type OldAnomalyDetectionResults__1049354644 =
+  {
+    anomalyPrevalence : {key : Text; value : Float};
+    counts :
+      {clean : Nat; poisoned : OldPoisonCounts__842734615; suspicious : Nat};
+    records : [OldRecordClassification__1053987300]
+  };
+type OldAnomalyStatus__321765649 = {#confirmed; #suspected};
+type OldAnomalyType__754750164 = {#clean; #poisoned; #suspicious};
+type OldDatasetItem__593022777 =
+  {
+    analysis : OldAnalysisResults__538736201;
+    burned : Bool;
+    createdAt : Int;
+    hash : Text;
+    name : Text;
+    records : [[?Text]];
+    sharedWith : [Principal];
+    visibility : OldVisibility__622755988
+  };
+type OldNormalization__367468963 =
+  {
+    avgTrustScore : Float;
+    natValidatorsCount : Nat;
+    normalizedScore : Float;
+    suspected :
+      {confoundingFields : [Nat]; hasPoison : Bool; multiAnomalies : [Nat]};
+    trustedSigners : [Principal]
+  };
+type OldPoisonCounts__842734615 = {confirmed : Nat; suspected : Nat};
+type OldPreprocessingSummary__833209940 =
+  {missingValues : Nat; normalization : OldNormalization__367468963};
+type OldRecordClassification__1053987300 =
+  {
+    anomalyStatus : ?OldAnomalyStatus__321765649;
+    anomalyType : OldAnomalyType__754750164
+  };
+type OldUserAnalysisState__6283859 =
+  {datasets : Map__605269027<Text, OldDatasetItem__593022777>};
+type OldUserProfile__416069324 = {name : Text};
+type OldVisibility__622755988 = {#privateScope; #publicScope; #sharedScope};
+type PlanTier__667101706 = {#enterprise; #free; #pro};
+type StripeConfiguration__87721349 =
+  {allowedCountries : [Text]; secretKey : Text};
+type SubscriptionStatus__33678052 =
+  {#active; #cancelled; #pastDue; #trialing};
+type Subscription__1018441105 =
+  {
+    billingPeriod : BillingPeriod__411281685;
+    nextBillingDate : Timestamp__301639476;
+    startDate : Timestamp__301639476;
+    status : SubscriptionStatus__33678052;
+    stripeCustomerId : ?Text;
+    stripeSubscriptionId : ?Text;
+    tier : PlanTier__667101706;
+    userId : UserId__158757552
+  };
+type TeamMemberStatus__329881962 = {#active; #pending; #suspended};
+type TeamMember__338035793 =
+  {
+    email : Text;
+    invitedBy : UserId__158757552;
+    joinDate : Timestamp__301639476;
+    name : Text;
+    principalId : UserId__158757552;
+    role : UserRole__41952412;
+    status : TeamMemberStatus__329881962
+  };
+type Timestamp__301639476 = Int;
+type TransactionStatus__913910731 =
+  {#failed; #pending; #refunded; #succeeded};
+type Transaction__797432978 =
+  {
+    amountCents : Nat;
+    createdAt : Timestamp__301639476;
+    currency : Text;
+    description : Text;
+    id : Text;
+    status : TransactionStatus__913910731;
+    stripePaymentIntentId : Text;
+    userId : UserId__158757552
+  };
+type UsageRecord__488875331 =
+  {apiCallCount : Nat; month : Nat; userId : UserId__158757552; year : Nat};
+type UserId__158757552 = Principal;
+type UserProfile__277265826 =
+  {
+    billingAddress : ?BillingAddress__977058009;
+    createdAt : Timestamp__301639476;
+    email : Text;
+    name : Text;
+    role : UserRole__41952412;
+    userId : UserId__158757552
+  };
+type UserRole__1073662873 = {#admin; #guest; #user};
+type UserRole__41952412 = {#admin; #customer; #manager};
+actor ({
+  in accessControlState : AccessControlState__45017055;
+  in userProfiles : Map__605269027<Principal, OldUserProfile__416069324>;
+  in userStates : Map__605269027<Principal, OldUserAnalysisState__6283859>
+}, {
+  stable accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : Map__605269027<Principal, UserRole__1073662873>
+    };
+  stable billingState : {var nextInvoiceId : Nat; var nextTxId : Nat};
+  stable invoices :
+    {
+      var root : Node__46230540<Text, Invoice__752737744>;
+      var size : Nat__490723111
+    };
+  stable stripeConfig : {var config : ?StripeConfiguration__87721349};
+  stable subscriptions :
+    {
+      var root : Node__46230540<UserId__158757552, Subscription__1018441105>;
+      var size : Nat__490723111
+    };
+  stable teamMembers :
+    {
+      var root : Node__46230540<UserId__158757552, TeamMember__338035793>;
+      var size : Nat__490723111
+    };
+  stable transactions :
+    {
+      var root : Node__46230540<Text, Transaction__797432978>;
+      var size : Nat__490723111
+    };
+  stable usage :
+    {
+      var root : Node__46230540<Text, UsageRecord__488875331>;
+      var size : Nat__490723111
+    };
+  stable userProfiles :
+    {
+      var root : Node__46230540<UserId__158757552, UserProfile__277265826>;
+      var size : Nat__490723111
+    }
+});
